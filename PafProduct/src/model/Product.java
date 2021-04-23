@@ -19,7 +19,7 @@ public class Product {
 		 {e.printStackTrace();}
 		 return con;
 		 }
-		public String insertProduct(String code, String name, String price, String desc)
+		public String insertProduct(String code, String name, String price, String desc, int units, String type)
 		 {
 		 String output = "";
 		 try
@@ -28,8 +28,8 @@ public class Product {
 		 if (con == null)
 		 {return "Error while connecting to the database for inserting."; }
 		 // create a prepared statement
-		 String query = " insert into products(`productID`,`productCode`,`productName`,`productPrice`,`productDesc`)"
-		 + " values (?, ?, ?, ?, ?)";
+		 String query = " insert into products(`productID`,`productCode`,`productName`,`productPrice`,`productDesc`, `noOfUnits`,`productType`)"
+		 + " values (?, ?, ?, ?, ?, ?, ?)";
 		 PreparedStatement preparedStmt = con.prepareStatement(query);
 		 // binding values
 		 preparedStmt.setInt(1, 0);
@@ -37,6 +37,8 @@ public class Product {
 		 preparedStmt.setString(3, name);
 		 preparedStmt.setDouble(4, Double.parseDouble(price));
 		 preparedStmt.setString(5, desc);
+		 preparedStmt.setInt(6, units);
+		 preparedStmt.setString(7, type);
 		// execute the statement
 		 preparedStmt.execute();
 		 con.close();
@@ -60,7 +62,7 @@ public class Product {
 		 // Prepare the html table to be displayed
 		 output = "<table border='1'><tr><th>Product Code</th><th>Product Name</th>" +
 		 "<th>Product Price</th>" +
-		 "<th>Product Description</th>" +
+		 "<th>Product Description</th>" + "<th>Number of Units</th>" + "<th>Product Type</th>" +
 		 "<th>Update</th><th>Remove</th></tr>";
 
 		 String query = "select * from products";
@@ -74,11 +76,15 @@ public class Product {
 		 String productName = rs.getString("productName");
 		 String productPrice = Double.toString(rs.getDouble("productPrice"));
 		 String productDesc = rs.getString("productDesc");
+		 String noOfUnits = rs.getString("noOfUnits");
+		 String productType = rs.getString("productType");
 		 // Add into the html table
 		 output += "<tr><td>" + productCode + "</td>";
 		 output += "<td>" + productName + "</td>";
 		 output += "<td>" + productPrice + "</td>";
 		 output += "<td>" + productDesc + "</td>";
+		 output += "<td>" + noOfUnits + "</td>";
+		 output += "<td>" + productType + "</td>";
 		 // buttons
 		 output += "<td><input name='btnUpdate' type='button' value='Update'class='btn btn-secondary'></td>"+ "<td><form method='post' action='products.jsp'>"+ "<input name='btnRemove' type='submit' value='Remove' class='btn btn-danger'>"+ "<input name='productID' type='hidden' value='" + productID+ "'>" + "</form></td></tr>";
 		 }
@@ -93,7 +99,7 @@ public class Product {
 		 }
 		 return output;
 		 }
-		public String updateProduct(String ID, String code, String name, String price, String desc)
+		public String updateProduct(String ID, String code, String name, String price, String desc, int units, String type)
 		{
 			 String output = "";
 			 try
@@ -102,14 +108,16 @@ public class Product {
 			 if (con == null)
 			 {return "Error while connecting to the database for updating."; }
 			 // create a prepared statement
-			 String query = "UPDATE products SET productCode=?,productName=?,productPrice=?,productDesc=?WHERE productID=?";
+			 String query = "UPDATE products SET productCode=?,productName=?,productPrice=?,productDesc=?,noOfUnits=?,productType=? WHERE productID=?";
 			 PreparedStatement preparedStmt = con.prepareStatement(query);
 			 // binding values
 			 preparedStmt.setString(1, code);
 			 preparedStmt.setString(2, name);
 			 preparedStmt.setDouble(3, Double.parseDouble(price));
 			 preparedStmt.setString(4, desc);
-			 preparedStmt.setInt(5, Integer.parseInt(ID));
+			 preparedStmt.setInt(5, units);
+			 preparedStmt.setString(6, type);
+			 preparedStmt.setInt(7, Integer.parseInt(ID));
 			 // execute the statement
 			 preparedStmt.execute();
 			 con.close();
